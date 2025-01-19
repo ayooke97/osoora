@@ -17,6 +17,9 @@
             <div class="history-header">
                 <h3><i class="ri-chat-history-line"></i> Chat History</h3>
                 <div class="history-actions">
+                    <button class="close-sidebar" id="close-sidebar" title="Close sidebar">
+                        <i class="ri-close-line"></i>
+                    </button>
                     <button class="clear-history" id="clear-history" title="Clear all history">
                         <i class="ri-delete-bin-line"></i>
                     </button>
@@ -36,7 +39,12 @@
         </div>
         <div class="chat-container">
             <div class="chat-header">
-                <h2><i class="ri-robot-line"></i> Dashscope AI Chatbot</h2>
+                <div class="header-left">
+                    <button class="menu-toggle" id="menu-toggle">
+                        <i class="ri-menu-line"></i>
+                    </button>
+                    <h2><i class="ri-robot-line"></i> Dashscope AI Chatbot</h2>
+                </div>
                 <div class="header-actions">
                     <div class="user-menu" id="user-menu">
                         <button class="user-button" id="user-button">

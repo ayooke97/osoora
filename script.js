@@ -48,6 +48,9 @@ const userAvatar = document.getElementById('user-avatar');
 const userName = document.getElementById('user-name');
 const dropdownUserName = document.getElementById('dropdown-user-name');
 const userEmail = document.getElementById('user-email');
+const menuToggle = document.getElementById('menu-toggle');
+const chatHistory = document.getElementById('chat-history');
+const closeSidebar = document.getElementById('close-sidebar');
 
 // Log DOM elements to console
 console.log('DOM Elements loaded:', {
@@ -161,7 +164,7 @@ function loadConversations() {
             loadConversation(currentConversationId);
         }
     }
-    toggleEmptyState();
+    updateHistoryList();
 }
 
 // Function to toggle empty state
@@ -193,48 +196,55 @@ function deleteConversation(id, event) {
 
 // Function to update the history list UI
 function updateHistoryList() {
-    historyList.innerHTML = emptyHistory.outerHTML;
-    conversations.forEach(conv => {
-        const item = document.createElement('div');
-        item.className = 'history-item';
-        if (conv.id === currentConversationId) {
-            item.classList.add('active');
-        }
-        
-        const header = document.createElement('div');
-        header.className = 'history-item-header';
-        
-        const topic = document.createElement('div');
-        topic.className = 'topic';
-        topic.textContent = conv.topic || 'New Chat';
-        
-        const timestamp = document.createElement('div');
-        timestamp.className = 'timestamp';
-        timestamp.textContent = formatTimestamp(conv.timestamp);
-        
-        const preview = document.createElement('div');
-        preview.className = 'preview';
-        preview.textContent = conv.preview || 'Empty conversation';
-        
-        const actions = document.createElement('div');
-        actions.className = 'actions';
-        
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-btn';
-        deleteBtn.innerHTML = '<i class="ri-delete-bin-line"></i>';
-        deleteBtn.title = 'Delete conversation';
-        deleteBtn.onclick = (e) => deleteConversation(conv.id, e);
-        
-        header.appendChild(topic);
-        header.appendChild(deleteBtn);
-        
-        item.appendChild(header);
-        item.appendChild(timestamp);
-        item.appendChild(preview);
-        
-        item.addEventListener('click', () => loadConversation(conv.id));
-        historyList.appendChild(item);
-    });
+    historyList.innerHTML = '';
+    
+    if (conversations.length === 0) {
+        historyList.appendChild(emptyHistory);
+        emptyHistory.style.display = 'flex';
+    } else {
+        emptyHistory.style.display = 'none';
+        conversations.forEach(conv => {
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            if (conv.id === currentConversationId) {
+                item.classList.add('active');
+            }
+            
+            const header = document.createElement('div');
+            header.className = 'history-item-header';
+            
+            const topic = document.createElement('div');
+            topic.className = 'topic';
+            topic.textContent = conv.topic || 'New Chat';
+            
+            const timestamp = document.createElement('div');
+            timestamp.className = 'timestamp';
+            timestamp.textContent = formatTimestamp(conv.timestamp);
+            
+            const preview = document.createElement('div');
+            preview.className = 'preview';
+            preview.textContent = conv.preview || 'Empty conversation';
+            
+            const actions = document.createElement('div');
+            actions.className = 'actions';
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '<i class="ri-delete-bin-line"></i>';
+            deleteBtn.title = 'Delete conversation';
+            deleteBtn.onclick = (e) => deleteConversation(conv.id, e);
+            
+            header.appendChild(topic);
+            header.appendChild(deleteBtn);
+            
+            item.appendChild(header);
+            item.appendChild(timestamp);
+            item.appendChild(preview);
+            
+            item.addEventListener('click', () => loadConversation(conv.id));
+            historyList.appendChild(item);
+        });
+    }
 }
 
 // Function to load a specific conversation
@@ -517,6 +527,28 @@ mediaQuery.addEventListener('change', (e) => {
     }
 });
 
+// Mobile menu toggle
+menuToggle.addEventListener('click', () => {
+    chatHistory.classList.toggle('show');
+});
+
+// Close sidebar button
+closeSidebar.addEventListener('click', () => {
+    chatHistory.classList.remove('show');
+});
+
+// Close menu when clicking outside on mobile
+document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 768) {
+        const isClickInsideHistory = chatHistory.contains(e.target);
+        const isClickOnToggle = menuToggle.contains(e.target);
+        
+        if (!isClickInsideHistory && !isClickOnToggle && chatHistory.classList.contains('show')) {
+            chatHistory.classList.remove('show');
+        }
+    }
+});
+
 // User Account Management
 userButton.addEventListener('click', () => {
     userDropdown.classList.toggle('hidden');
@@ -589,5 +621,8 @@ userInput.addEventListener('keypress', (e) => {
 // Load conversations on startup
 loadConversations();
 
-// Initial greeting
-addMessage('Hello! I am your Dashscope AI assistant. How can I help you today?', false);
+// Add initial greeting only if there are no existing conversations
+if (conversations.length === 0) {
+    createNewConversation();
+    addMessage('Hello! I am your Dashscope AI assistant. How can I help you today?', false);
+}
