@@ -1,3 +1,21 @@
+// Session check at the start of the file
+function checkSession() {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    
+    if (!token || !user) {
+        window.location.href = 'account.html';
+        return false;
+    }
+    return true;
+}
+
+// Run session check immediately
+if (!checkSession()) {
+    // Stop further script execution if not authenticated
+    throw new Error('Not authenticated');
+}
+
 // Configuration object for API
 const config = {
     proxyUrl: 'http://localhost:3000/api/chat'
@@ -17,6 +35,19 @@ const userInput = document.getElementById('user-input');
 const sendButton = document.getElementById('send-button');
 const connectionStatus = document.getElementById('connection-status');
 const historyList = document.getElementById('history-list');
+const newChatButton = document.getElementById('new-chat');
+const clearHistoryButton = document.getElementById('clear-history');
+const emptyHistory = document.getElementById('empty-history');
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+const userButton = document.getElementById('user-button');
+const userDropdown = document.getElementById('user-dropdown');
+const loginButton = document.getElementById('login-button');
+const logoutButton = document.getElementById('logout-button');
+const userAvatar = document.getElementById('user-avatar');
+const userName = document.getElementById('user-name');
+const dropdownUserName = document.getElementById('dropdown-user-name');
+const userEmail = document.getElementById('user-email');
 
 // Log DOM elements to console
 console.log('DOM Elements loaded:', {
@@ -24,7 +55,20 @@ console.log('DOM Elements loaded:', {
     userInput,
     sendButton,
     connectionStatus,
-    historyList
+    historyList,
+    newChatButton,
+    clearHistoryButton,
+    emptyHistory,
+    themeToggle,
+    themeIcon,
+    userButton,
+    userDropdown,
+    loginButton,
+    logoutButton,
+    userAvatar,
+    userName,
+    dropdownUserName,
+    userEmail
 });
 
 // Chat history data
@@ -36,24 +80,75 @@ function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
+// Function to format timestamp
+function formatTimestamp(date) {
+    const now = new Date();
+    const messageDate = new Date(date);
+    
+    // If today, show time
+    if (messageDate.toDateString() === now.toDateString()) {
+        return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    
+    // If this year, show month and day
+    if (messageDate.getFullYear() === now.getFullYear()) {
+        return messageDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
+    
+    // Otherwise show full date
+    return messageDate.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
 // Function to create a new conversation
 function createNewConversation() {
     const conversation = {
         id: generateId(),
         messages: [],
         timestamp: new Date(),
-        preview: ''
+        preview: '',
+        topic: 'New Chat'  // Default topic
     };
     conversations.unshift(conversation);
     currentConversationId = conversation.id;
     saveConversations();
     updateHistoryList();
+    clearChat();
     return conversation;
+}
+
+// Function to generate topic from messages
+function generateTopic(messages) {
+    if (messages.length === 0) return 'New Chat';
+    // Get the first user message as the topic
+    const firstMessage = messages.find(m => m.role === 'user');
+    if (!firstMessage) return 'New Chat';
+    
+    // Truncate the message to create a topic
+    const topic = firstMessage.content.split('\n')[0].trim();
+    return topic.length > 40 ? topic.substring(0, 37) + '...' : topic;
+}
+
+// Function to update conversation topic
+function updateConversationTopic(conversationId) {
+    const conversation = conversations.find(c => c.id === conversationId);
+    if (conversation) {
+        conversation.topic = generateTopic(conversation.messages);
+        saveConversations();
+        updateHistoryList();
+    }
+}
+
+// Function to clear chat messages
+function clearChat() {
+    chatMessages.innerHTML = '';
+    userInput.value = '';
+    userInput.focus();
 }
 
 // Function to save conversations to localStorage
 function saveConversations() {
     localStorage.setItem('chatConversations', JSON.stringify(conversations));
+    toggleEmptyState();
 }
 
 // Function to load conversations from localStorage
@@ -61,13 +156,44 @@ function loadConversations() {
     const saved = localStorage.getItem('chatConversations');
     if (saved) {
         conversations = JSON.parse(saved);
+        if (conversations.length > 0) {
+            currentConversationId = conversations[0].id;
+            loadConversation(currentConversationId);
+        }
+    }
+    toggleEmptyState();
+}
+
+// Function to toggle empty state
+function toggleEmptyState() {
+    if (conversations.length === 0) {
+        emptyHistory.style.display = 'flex';
+    } else {
+        emptyHistory.style.display = 'none';
+    }
+}
+
+// Function to delete conversation
+function deleteConversation(id, event) {
+    event.stopPropagation();
+    if (confirm('Are you sure you want to delete this conversation?')) {
+        conversations = conversations.filter(c => c.id !== id);
+        if (id === currentConversationId) {
+            currentConversationId = conversations.length > 0 ? conversations[0].id : null;
+            if (currentConversationId) {
+                loadConversation(currentConversationId);
+            } else {
+                clearChat();
+            }
+        }
+        saveConversations();
         updateHistoryList();
     }
 }
 
 // Function to update the history list UI
 function updateHistoryList() {
-    historyList.innerHTML = '';
+    historyList.innerHTML = emptyHistory.outerHTML;
     conversations.forEach(conv => {
         const item = document.createElement('div');
         item.className = 'history-item';
@@ -75,14 +201,34 @@ function updateHistoryList() {
             item.classList.add('active');
         }
         
+        const header = document.createElement('div');
+        header.className = 'history-item-header';
+        
+        const topic = document.createElement('div');
+        topic.className = 'topic';
+        topic.textContent = conv.topic || 'New Chat';
+        
         const timestamp = document.createElement('div');
         timestamp.className = 'timestamp';
-        timestamp.textContent = new Date(conv.timestamp).toLocaleString();
+        timestamp.textContent = formatTimestamp(conv.timestamp);
         
         const preview = document.createElement('div');
         preview.className = 'preview';
         preview.textContent = conv.preview || 'Empty conversation';
         
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.innerHTML = '<i class="ri-delete-bin-line"></i>';
+        deleteBtn.title = 'Delete conversation';
+        deleteBtn.onclick = (e) => deleteConversation(conv.id, e);
+        
+        header.appendChild(topic);
+        header.appendChild(deleteBtn);
+        
+        item.appendChild(header);
         item.appendChild(timestamp);
         item.appendChild(preview);
         
@@ -129,7 +275,7 @@ function createMessageElement(content, isUser) {
     // Create sender name
     const sender = document.createElement('div');
     sender.className = 'message-sender';
-    sender.textContent = isUser ? 'You' : 'Dashscope AI';
+    sender.textContent = isUser ? 'Anda' : 'Osoora AI';
     
     // Create message content
     const messageContent = document.createElement('div');
@@ -183,6 +329,10 @@ function addMessage(content, isUser, save = true) {
             conversation.messages.push({ role: isUser ? 'user' : 'assistant', content });
             conversation.preview = content;
             conversation.timestamp = new Date();
+            // Update topic after adding first user message
+            if (isUser && conversation.messages.filter(m => m.role === 'user').length === 1) {
+                updateConversationTopic(currentConversationId);
+            }
             saveConversations();
             updateHistoryList();
         }
@@ -304,8 +454,131 @@ async function handleSendMessage() {
     }
 }
 
+// Function to clear all history
+function clearAllHistory() {
+    if (confirm('Are you sure you want to clear all chat history? This cannot be undone.')) {
+        conversations = [];
+        currentConversationId = null;
+        localStorage.removeItem('chatConversations');
+        clearChat();
+        updateHistoryList();
+        toggleEmptyState();
+    }
+}
+
+// Theme management
+function getPreferredTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        return savedTheme;
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function updateThemeIcon(theme) {
+    const isDark = theme === 'dark';
+    themeIcon.className = isDark ? 'ri-sun-line' : 'ri-moon-line';
+    themeToggle.setAttribute('title', `Switch to ${isDark ? 'light' : 'dark'} mode`);
+    themeToggle.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} mode`);
+}
+
+function setTheme(theme, updateStorage = true) {
+    document.documentElement.style.setProperty('--transition-normal', 'none');
+    document.body.classList.remove('light-theme', 'dark-theme');
+    
+    requestAnimationFrame(() => {
+        document.body.classList.add(`${theme}-theme`);
+        document.documentElement.style.setProperty('--transition-normal', 'all 0.3s ease');
+        
+        if (updateStorage) {
+            localStorage.setItem('theme', theme);
+        }
+        
+        updateThemeIcon(theme);
+    });
+}
+
+// Initialize theme
+const initialTheme = getPreferredTheme();
+setTheme(initialTheme, false);
+
+// Theme toggle event listener
+themeToggle.addEventListener('click', () => {
+    const currentTheme = localStorage.getItem('theme') || getPreferredTheme();
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+});
+
+// Watch for system theme changes
+const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+mediaQuery.addEventListener('change', (e) => {
+    if (!localStorage.getItem('theme')) {
+        setTheme(e.matches ? 'dark' : 'light', false);
+    }
+});
+
+// User Account Management
+userButton.addEventListener('click', () => {
+    userDropdown.classList.toggle('hidden');
+});
+
+document.addEventListener('click', (e) => {
+    if (!userButton.contains(e.target) && !userDropdown.contains(e.target)) {
+        userDropdown.classList.add('hidden');
+    }
+});
+
+loginButton.addEventListener('click', () => {
+    window.location.href = 'account.html';
+});
+
+logoutButton.addEventListener('click', () => {
+    if (confirm('Are you sure you want to sign out?')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        updateUserInterface();
+    }
+});
+
+function updateUserInterface() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const isAuthenticated = !!localStorage.getItem('token');
+
+    if (isAuthenticated && user) {
+        // Update avatar
+        const avatarUrl = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=7c3aed&color=fff`;
+        userAvatar.src = avatarUrl;
+        document.querySelector('.user-info img').src = avatarUrl;
+
+        // Update name and email
+        userName.textContent = user.name;
+        dropdownUserName.textContent = user.name;
+        userEmail.textContent = user.email;
+
+        // Show/hide buttons
+        loginButton.classList.add('hidden');
+        logoutButton.classList.remove('hidden');
+    } else {
+        // Reset to guest state
+        const guestAvatar = 'https://ui-avatars.com/api/?name=Guest&background=7c3aed&color=fff';
+        userAvatar.src = guestAvatar;
+        document.querySelector('.user-info img').src = guestAvatar;
+
+        userName.textContent = 'Guest';
+        dropdownUserName.textContent = 'Guest';
+        userEmail.textContent = 'Not signed in';
+
+        loginButton.classList.remove('hidden');
+        logoutButton.classList.add('hidden');
+    }
+}
+
+updateUserInterface();
+
 // Event listeners
 sendButton.addEventListener('click', handleSendMessage);
+newChatButton.addEventListener('click', createNewConversation);
+clearHistoryButton.addEventListener('click', clearAllHistory);
 
 userInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
