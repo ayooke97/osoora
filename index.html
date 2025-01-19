@@ -7,26 +7,42 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github-dark.min.css">
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/lib/highlight.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
+        <div class="chat-history" id="chat-history">
+            <div class="history-header">
+                <h3><i class="ri-chat-history-line"></i> Chat History</h3>
+            </div>
+            <div class="history-list" id="history-list">
+                <!-- Chat history items will be added here -->
+            </div>
+        </div>
         <div class="chat-container">
             <div class="chat-header">
-                <h2>Dashscope AI Chatbot</h2>
+                <h2><i class="ri-robot-line"></i> Dashscope AI Chatbot</h2>
             </div>
             
             <div class="chat-messages" id="chat-messages">
                 <!-- Messages will be added here dynamically -->
             </div>
+
             <div class="chat-input">
-                <input type="text" id="user-input" placeholder="Type your message here...">
-                <button id="send-button">Send</button>
+                <div class="chat-input-container">
+                    <input type="text" id="user-input" placeholder="Send a message...">
+                    <button id="send-button">
+                        <i class="ri-send-plane-fill"></i>
+                    </button>
+                </div>
             </div>
             
             <!-- Connection Status -->
-            <div class="connection-status" id="connection-status"></div>
+            <div class="connection-status" id="connection-status">
+                <i class="ri-wifi-line"></i> <span>Connected</span>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>

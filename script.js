@@ -16,14 +16,93 @@ const chatMessages = document.getElementById('chat-messages');
 const userInput = document.getElementById('user-input');
 const sendButton = document.getElementById('send-button');
 const connectionStatus = document.getElementById('connection-status');
+const historyList = document.getElementById('history-list');
 
 // Log DOM elements to console
 console.log('DOM Elements loaded:', {
     chatMessages,
     userInput,
     sendButton,
-    connectionStatus
+    connectionStatus,
+    historyList
 });
+
+// Chat history data
+let conversations = [];
+let currentConversationId = null;
+
+// Function to generate a unique ID
+function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+// Function to create a new conversation
+function createNewConversation() {
+    const conversation = {
+        id: generateId(),
+        messages: [],
+        timestamp: new Date(),
+        preview: ''
+    };
+    conversations.unshift(conversation);
+    currentConversationId = conversation.id;
+    saveConversations();
+    updateHistoryList();
+    return conversation;
+}
+
+// Function to save conversations to localStorage
+function saveConversations() {
+    localStorage.setItem('chatConversations', JSON.stringify(conversations));
+}
+
+// Function to load conversations from localStorage
+function loadConversations() {
+    const saved = localStorage.getItem('chatConversations');
+    if (saved) {
+        conversations = JSON.parse(saved);
+        updateHistoryList();
+    }
+}
+
+// Function to update the history list UI
+function updateHistoryList() {
+    historyList.innerHTML = '';
+    conversations.forEach(conv => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        if (conv.id === currentConversationId) {
+            item.classList.add('active');
+        }
+        
+        const timestamp = document.createElement('div');
+        timestamp.className = 'timestamp';
+        timestamp.textContent = new Date(conv.timestamp).toLocaleString();
+        
+        const preview = document.createElement('div');
+        preview.className = 'preview';
+        preview.textContent = conv.preview || 'Empty conversation';
+        
+        item.appendChild(timestamp);
+        item.appendChild(preview);
+        
+        item.addEventListener('click', () => loadConversation(conv.id));
+        historyList.appendChild(item);
+    });
+}
+
+// Function to load a specific conversation
+function loadConversation(conversationId) {
+    currentConversationId = conversationId;
+    const conversation = conversations.find(c => c.id === conversationId);
+    if (conversation) {
+        chatMessages.innerHTML = '';
+        conversation.messages.forEach(msg => {
+            addMessage(msg.content, msg.role === 'user', false);
+        });
+        updateHistoryList();
+    }
+}
 
 // Function to update connection status
 function updateConnectionStatus(message, type = '') {
@@ -32,22 +111,33 @@ function updateConnectionStatus(message, type = '') {
     connectionStatus.className = 'connection-status ' + type;
 }
 
-// Chat history
-let chatHistory = [];
-
 // Function to create a message element
 function createMessageElement(content, isUser) {
     console.log(`Creating ${isUser ? 'user' : 'bot'} message:`, content);
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
     
+    // Create avatar
+    const avatar = document.createElement('div');
+    avatar.className = 'message-avatar';
+    avatar.innerHTML = isUser ? '<i class="ri-user-line"></i>' : '<i class="ri-robot-line"></i>';
+    
+    // Create content wrapper
+    const contentWrapper = document.createElement('div');
+    contentWrapper.className = 'message-content-wrapper';
+    
+    // Create sender name
+    const sender = document.createElement('div');
+    sender.className = 'message-sender';
+    sender.textContent = isUser ? 'You' : 'Dashscope AI';
+    
+    // Create message content
     const messageContent = document.createElement('div');
     messageContent.className = 'message-content';
     
     if (isUser) {
         messageContent.textContent = content;
     } else {
-        // Parse markdown for bot messages
         messageContent.innerHTML = marked.parse(content, {
             gfm: true,
             breaks: true,
@@ -70,30 +160,57 @@ function createMessageElement(content, isUser) {
         });
     }
     
-    messageDiv.appendChild(messageContent);
+    contentWrapper.appendChild(sender);
+    contentWrapper.appendChild(messageContent);
+    messageDiv.appendChild(avatar);
+    messageDiv.appendChild(contentWrapper);
     return messageDiv;
 }
 
 // Function to add a message to the chat
-function addMessage(content, isUser) {
+function addMessage(content, isUser, save = true) {
     const messageElement = createMessageElement(content, isUser);
     chatMessages.appendChild(messageElement);
     chatMessages.scrollTop = chatMessages.scrollHeight;
-    chatHistory.push({ role: isUser ? 'user' : 'assistant', content });
+    
+    if (save) {
+        if (!currentConversationId) {
+            createNewConversation();
+        }
+        
+        const conversation = conversations.find(c => c.id === currentConversationId);
+        if (conversation) {
+            conversation.messages.push({ role: isUser ? 'user' : 'assistant', content });
+            conversation.preview = content;
+            conversation.timestamp = new Date();
+            saveConversations();
+            updateHistoryList();
+        }
+    }
 }
 
 // Function to show typing indicator
 function showTypingIndicator() {
     console.log('Showing typing indicator');
     const typingDiv = document.createElement('div');
-    typingDiv.className = 'message bot-message';
+    typingDiv.className = 'typing-indicator';
     typingDiv.id = 'typing-indicator';
     
-    const typingContent = document.createElement('div');
-    typingContent.className = 'typing-indicator';
-    typingContent.textContent = 'Bot is typing...';
+    const avatar = document.createElement('div');
+    avatar.className = 'message-avatar';
+    avatar.innerHTML = '<i class="ri-robot-line"></i>';
     
-    typingDiv.appendChild(typingContent);
+    const bubble = document.createElement('div');
+    bubble.className = 'typing-bubble';
+    
+    for (let i = 0; i < 3; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'typing-dot';
+        bubble.appendChild(dot);
+    }
+    
+    typingDiv.appendChild(avatar);
+    typingDiv.appendChild(bubble);
     chatMessages.appendChild(typingDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
@@ -195,6 +312,9 @@ userInput.addEventListener('keypress', (e) => {
         handleSendMessage();
     }
 });
+
+// Load conversations on startup
+loadConversations();
 
 // Initial greeting
 addMessage('Hello! I am your Dashscope AI assistant. How can I help you today?', false);
