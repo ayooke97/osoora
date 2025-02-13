@@ -16,6 +16,10 @@ if (!checkSession()) {
     throw new Error('Not authenticated');
 }
 
+// Global variables
+let conversations = [];
+let currentConversationId = null;
+
 // Configuration object for API
 const config = {
     proxyUrl: 'http://localhost:3000/api/chat'
@@ -74,10 +78,6 @@ console.log('DOM Elements loaded:', {
     userEmail
 });
 
-// Chat history data
-let conversations = [];
-let currentConversationId = null;
-
 // Function to generate a unique ID
 function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -116,6 +116,15 @@ function createNewConversation() {
     saveConversations();
     updateHistoryList();
     clearChat();
+
+    // Add welcome message
+    const welcomeMessage = "👋 Hello! I'm your AI assistant. How can I help you today?";
+    addMessage(welcomeMessage, false);
+    conversation.messages.push({ role: 'assistant', content: welcomeMessage });
+    conversation.preview = welcomeMessage;
+    saveConversations();
+    updateHistoryList();
+
     return conversation;
 }
 
@@ -150,18 +159,21 @@ function clearChat() {
 
 // Function to save conversations to localStorage
 function saveConversations() {
-    localStorage.setItem('chatConversations', JSON.stringify(conversations));
+    localStorage.setItem('conversations', JSON.stringify(conversations));
     toggleEmptyState();
 }
 
 // Function to load conversations from localStorage
 function loadConversations() {
-    const saved = localStorage.getItem('chatConversations');
-    if (saved) {
-        conversations = JSON.parse(saved);
+    const savedConversations = localStorage.getItem('conversations');
+    if (savedConversations) {
+        conversations = JSON.parse(savedConversations);
         if (conversations.length > 0) {
             currentConversationId = conversations[0].id;
-            loadConversation(currentConversationId);
+            // Convert stored timestamps back to Date objects
+            conversations.forEach(conv => {
+                conv.timestamp = new Date(conv.timestamp);
+            });
         }
     }
     updateHistoryList();
@@ -267,66 +279,50 @@ function updateConnectionStatus(message, type = '') {
     connectionStatus.className = 'connection-status ' + type;
 }
 
+// Configure marked with options
+marked.setOptions({
+    highlight: function(code, lang) {
+        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+        return hljs.highlight(code, { language }).value;
+    },
+    langPrefix: 'hljs language-',
+    gfm: true,
+    breaks: true
+});
+
 // Function to create a message element
 function createMessageElement(content, isUser) {
-    console.log(`Creating ${isUser ? 'user' : 'bot'} message:`, content);
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
-    
-    // Create avatar
-    const avatar = document.createElement('div');
-    avatar.className = 'message-avatar';
-    avatar.innerHTML = isUser ? '<i class="ri-user-line"></i>' : '<i class="ri-robot-line"></i>';
-    
-    // Create content wrapper
-    const contentWrapper = document.createElement('div');
-    contentWrapper.className = 'message-content-wrapper';
-    
-    // Create sender name
-    const sender = document.createElement('div');
-    sender.className = 'message-sender';
-    sender.textContent = isUser ? 'Anda' : 'Osoora AI';
-    
-    // Create message content
-    const messageContent = document.createElement('div');
-    messageContent.className = 'message-content';
+
+    const avatarDiv = document.createElement('div');
+    avatarDiv.className = 'avatar';
+    avatarDiv.innerHTML = isUser ? '<i class="ri-user-line"></i>' : '<i class="ri-robot-line"></i>';
+
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content';
     
     if (isUser) {
-        messageContent.textContent = content;
+        contentDiv.textContent = content;
     } else {
-        messageContent.innerHTML = marked.parse(content, {
-            gfm: true,
-            breaks: true,
-            highlight: function(code, language) {
-                if (language && hljs.getLanguage(language)) {
-                    try {
-                        return hljs.highlight(code, { language }).value;
-                    } catch (err) {
-                        console.error('Highlight error:', err);
-                    }
-                }
-                return code;
-            }
-        });
-        
-        // Make links open in new tab
-        messageContent.querySelectorAll('a').forEach(link => {
-            link.setAttribute('target', '_blank');
-            link.setAttribute('rel', 'noopener noreferrer');
+        // For bot messages, render as Markdown
+        contentDiv.innerHTML = marked.parse(content);
+        // Highlight any code blocks
+        contentDiv.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
         });
     }
-    
-    contentWrapper.appendChild(sender);
-    contentWrapper.appendChild(messageContent);
-    messageDiv.appendChild(avatar);
-    messageDiv.appendChild(contentWrapper);
-    return messageDiv;
+
+    messageDiv.appendChild(avatarDiv);
+    messageDiv.appendChild(contentDiv);
+
+    return { messageDiv, contentDiv };
 }
 
 // Function to add a message to the chat
 function addMessage(content, isUser, save = true) {
-    const messageElement = createMessageElement(content, isUser);
-    chatMessages.appendChild(messageElement);
+    const { messageDiv, contentDiv } = createMessageElement(content, isUser);
+    chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     
     if (save) {
@@ -392,28 +388,89 @@ async function sendToAPI(message) {
         
         console.log('Using proxy URL:', config.proxyUrl);
         
-        const response = await api.post(config.proxyUrl, {
-            message: message
+        // Create event source for streaming
+        const response = await fetch(config.proxyUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message })
         });
-        
-        console.log('API Response:', response.data);
-        
+
+        // Create a reader to read the stream
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
         updateConnectionStatus('Connected', 'connected');
-        
-        if (response.data && response.data.output && response.data.output.text) {
-            return {
-                choices: [
-                    {
-                        message: {
-                            content: response.data.output.text
+
+        // Return a promise that resolves with an array of all responses
+        return new Promise(async (resolve, reject) => {
+            try {
+                let fullResponse = '';
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    
+                    if (done) {
+                        break;
+                    }
+
+                    // Decode the chunk and add to buffer
+                    buffer += decoder.decode(value, { stream: true });
+                    
+                    // Process complete events
+                    let newlineIndex;
+                    while ((newlineIndex = buffer.indexOf('\n\n')) !== -1) {
+                        const event = buffer.slice(0, newlineIndex);
+                        buffer = buffer.slice(newlineIndex + 2);
+
+                        // Parse the event
+                        const lines = event.split('\n');
+                        for (const line of lines) {
+                            if (!line.startsWith('data:')) continue;
+                            
+                            const data = line.slice(5).trim();
+                            if (!data) continue;
+                            
+                            if (data === '[DONE]') {
+                                resolve({
+                                    choices: [{
+                                        message: {
+                                            content: fullResponse
+                                        }
+                                    }]
+                                });
+                                return;
+                            }
+
+                            try {
+                                const parsedData = JSON.parse(data);
+                                if (parsedData.error) {
+                                    throw new Error(parsedData.error);
+                                }
+                                if (parsedData.choices?.[0]?.message?.content) {
+                                    const content = parsedData.choices[0].message.content;
+                                    if (content.trim()) {
+                                        fullResponse += content;
+                                        // Emit partial response for real-time updates
+                                        window.dispatchEvent(new CustomEvent('partialResponse', {
+                                            detail: { content }
+                                        }));
+                                    }
+                                }
+                            } catch (e) {
+                                if (!data.startsWith('id:')) {  // Ignore ID lines
+                                    console.error('Error parsing SSE data:', e, 'Raw data:', data);
+                                }
+                            }
                         }
                     }
-                ]
-            };
-        } else {
-            console.error('Invalid API response format:', response.data);
-            throw new Error('Invalid response format from API');
-        }
+                }
+            } catch (error) {
+                reject(error);
+            }
+        });
     } catch (error) {
         console.error('API Error:', error);
         if (error.response) {
@@ -443,17 +500,63 @@ async function handleSendMessage() {
     showTypingIndicator();
 
     try {
+        // Remove typing indicator before creating new message
+        removeTypingIndicator();
+
+        // Create a temporary message element for streaming updates
+        const tempMessageId = 'temp-' + Date.now();
+        const { messageDiv, contentDiv } = createMessageElement('', false);
+        contentDiv.id = tempMessageId;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        let accumulatedMarkdown = '';
+
+        // Listen for partial responses
+        const handlePartialResponse = (event) => {
+            const content = event.detail.content;
+            accumulatedMarkdown += content;
+            const messageElement = document.getElementById(tempMessageId);
+            if (messageElement) {
+                messageElement.innerHTML = marked.parse(accumulatedMarkdown);
+                // Highlight any code blocks
+                messageElement.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightBlock(block);
+                });
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        };
+        window.addEventListener('partialResponse', handlePartialResponse);
+
         // Send message to API
         const response = await sendToAPI(message);
         
-        // Remove typing indicator
-        removeTypingIndicator();
+        // Remove event listener
+        window.removeEventListener('partialResponse', handlePartialResponse);
 
-        // Add bot response to chat
+        // Update the final message
         if (response && response.choices && response.choices[0].message) {
             const botResponse = response.choices[0].message.content;
             console.log('Bot response:', botResponse);
-            addMessage(botResponse, false);
+            const messageElement = document.getElementById(tempMessageId);
+            if (messageElement) {
+                messageElement.innerHTML = marked.parse(botResponse);
+                // Highlight any code blocks
+                messageElement.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightBlock(block);
+                });
+            }
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Save the bot's response to conversation history
+            const conversation = conversations.find(c => c.id === currentConversationId);
+            if (conversation) {
+                conversation.messages.push({ role: 'assistant', content: botResponse });
+                conversation.preview = botResponse;
+                conversation.timestamp = new Date();
+                saveConversations();
+                updateHistoryList();
+            }
         } else {
             throw new Error('Invalid API response format');
         }
@@ -469,10 +572,12 @@ function clearAllHistory() {
     if (confirm('Are you sure you want to clear all chat history? This cannot be undone.')) {
         conversations = [];
         currentConversationId = null;
-        localStorage.removeItem('chatConversations');
+        localStorage.removeItem('conversations');
         clearChat();
         updateHistoryList();
         toggleEmptyState();
+        // Create a new conversation after clearing
+        createNewConversation();
     }
 }
 
