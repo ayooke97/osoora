@@ -1,0 +1,1058 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Multi-Document Vector Store Results</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f5f5f5;
+            }
+            .container {
+                background-color: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            h1, h2, h3 {
+                color: #2c3e50;
+            }
+            h1 {
+                text-align: center;
+                margin-bottom: 30px;
+                color: #3498db;
+                border-bottom: 2px solid #3498db;
+                padding-bottom: 10px;
+            }
+            .query-container {
+                margin-bottom: 30px;
+                border-left: 4px solid #3498db;
+                padding-left: 15px;
+                background-color: #f9f9f9;
+                border-radius: 0 8px 8px 0;
+                padding: 15px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+            .query {
+                font-size: 1.2em;
+                font-weight: bold;
+                color: #3498db;
+                margin-bottom: 10px;
+                padding: 5px 0;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            .answer {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 5px;
+                margin-bottom: 15px;
+                border-left: 3px solid #2ecc71;
+            }
+            .original-answer {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 5px;
+                margin-bottom: 15px;
+                border-left: 3px solid #9b59b6;
+                font-style: italic;
+            }
+            .paraphrased-answer {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 5px;
+                margin-bottom: 15px;
+                border-left: 3px solid #2ecc71;
+            }
+            .paraphrase-info {
+                background-color: #f0f7ff;
+                padding: 10px;
+                border-radius: 5px;
+                margin-bottom: 15px;
+                font-size: 0.9em;
+                color: #3498db;
+            }
+            .documents {
+                margin-top: 15px;
+            }
+            .document {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 5px;
+                margin-bottom: 10px;
+                border-left: 3px solid #e74c3c;
+                transition: all 0.2s ease;
+            }
+            .document:hover {
+                box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+                transform: translateY(-2px);
+            }
+            .metadata {
+                font-size: 0.9em;
+                color: #7f8c8d;
+                margin-top: 5px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            .metadata span {
+                margin-right: 10px;
+                background-color: #ecf0f1;
+                padding: 3px 8px;
+                border-radius: 3px;
+                display: inline-block;
+            }
+            .timestamp {
+                text-align: center;
+                font-size: 0.8em;
+                color: #95a5a6;
+                margin-top: 30px;
+            }
+            .filtered-section {
+                border-top: 2px dashed #3498db;
+                margin-top: 30px;
+                padding-top: 20px;
+            }
+            .filter-badge {
+                display: inline-block;
+                background-color: #9b59b6;
+                color: white;
+                padding: 3px 8px;
+                border-radius: 3px;
+                margin-left: 10px;
+                font-size: 0.8em;
+            }
+            .sources {
+                margin-top: 10px;
+                font-size: 0.9em;
+                color: #7f8c8d;
+            }
+            .source-item {
+                background-color: #f0f0f0;
+                padding: 8px;
+                margin-bottom: 5px;
+                border-radius: 4px;
+                border-left: 2px solid #3498db;
+            }
+            .nav {
+                position: sticky;
+                top: 0;
+                background-color: #fff;
+                padding: 10px;
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+                z-index: 100;
+            }
+            .nav-links {
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+            }
+            .nav-link {
+                color: #3498db;
+                text-decoration: none;
+                padding: 5px 10px;
+                border-radius: 4px;
+                transition: background-color 0.2s;
+            }
+            .nav-link:hover {
+                background-color: #f0f7ff;
+            }
+            .section {
+                margin-top: 40px;
+                padding-top: 10px;
+            }
+            .doc-type {
+                display: inline-block;
+                padding: 3px 8px;
+                border-radius: 3px;
+                font-size: 0.8em;
+                color: white;
+                margin-right: 5px;
+            }
+            .doc-type-person {
+                background-color: #3498db;
+            }
+            .doc-type-company {
+                background-color: #e74c3c;
+            }
+            .doc-type-report {
+                background-color: #2ecc71;
+            }
+            .doc-type-event {
+                background-color: #f39c12;
+            }
+            .doc-type-article {
+                background-color: #9b59b6;
+            }
+            .doc-type-default {
+                background-color: #95a5a6;
+            }
+            .similarity-metrics {
+                margin-top: 15px;
+                padding: 10px;
+                background-color: #f5f5f5;
+                border-radius: 5px;
+            }
+            .similarity-metrics h4 {
+                margin-top: 0;
+                color: #2c3e50;
+            }
+            .similarity-metrics ul {
+                list-style-type: none;
+                padding: 0;
+            }
+            .similarity-metrics li {
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+            }
+            .metric-name {
+                width: 180px;
+                display: inline-block;
+                font-weight: bold;
+            }
+            .similarity-value {
+                width: 60px;
+                display: inline-block;
+                text-align: right;
+                margin-right: 10px;
+            }
+            .similarity-bar {
+                height: 12px;
+                background-color: #3498db;
+                border-radius: 6px;
+                display: inline-block;
+                min-width: 5px;
+                max-width: 200px;
+            }
+            @media (max-width: 768px) {
+                .container {
+                    padding: 10px;
+                }
+                .metadata {
+                    flex-direction: column;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Multi-Document Vector Store Results</h1>
+            
+            <div class="nav">
+                <div class="nav-links">
+                    <a href="#general-queries" class="nav-link">General Queries</a>
+                    <a href="#document-types" class="nav-link">Document Types</a>
+                    <a href="#cross-document" class="nav-link">Cross-Document Queries</a>
+                </div>
+            </div>
+            
+            <div id="general-queries" class="section">
+                <h2>General Queries</h2>
+    
+            <div class="query-container">
+                <div class="query">Q: Who is Michael Brown?</div>
+        
+                <div class="paraphrased-answer">
+                    <strong>Paraphrased Answer:</strong> Michael Brown navigates the world of project management with the finesse of an agile practitioner, seamlessly blending strategy and flexibility to drive projects to success.
+                </div>
+                <div class="original-answer">
+                    <strong>Original Answer:</strong> Michael Brown is a project manager with experience in agile methodologies.
+                </div>
+                <div class="paraphrase-info">
+                    <strong>Paraphrase Style:</strong> creative
+                </div>
+                <div class="similarity-metrics">
+                    <h4>Similarity Metrics</h4>
+                    <ul>
+                        <li>
+                            <span class="metric-name">Text Similarity:</span>
+                            <span class="similarity-value">0.4372</span>
+                            <span class="similarity-bar" style="width: 87.44px;"></span>
+                        </li>
+                        <li>
+                            <span class="metric-name">Word Overlap:</span>
+                            <span class="similarity-value">0.1786</span>
+                            <span class="similarity-bar" style="width: 35.72px;"></span>
+                        </li>
+                        <li>
+                            <span class="metric-name">Cosine Similarity:</span>
+                            <span class="similarity-value">0.9066</span>
+                            <span class="similarity-bar" style="width: 181.32px;"></span>
+                        </li>
+                        <li>
+                            <span class="metric-name">Euclidean Similarity:</span>
+                            <span class="similarity-value">0.6982</span>
+                            <span class="similarity-bar" style="width: 139.64000000000001px;"></span>
+                        </li>
+                        <li>
+                            <span class="metric-name">Overall Similarity:</span>
+                            <span class="similarity-value">0.6254</span>
+                            <span class="similarity-bar" style="width: 125.07999999999998px;"></span>
+                        </li>
+                    </ul>
+                </div>
+            
+                <div class="documents">
+                    <h3>Retrieved Documents (3)</h3>
+        
+                    <div class="document">
+                        <div>
+                            <span class="doc-type doc-type-person">person</span>
+                            Michael Brown is a project manager with experience in agile methodologies.
+                        </div>
+                        <div class="metadata">
+                            <span>Type: person</span>
+                            <span>Source: employee_database</span>
+                            <span>ID: p003</span>
+                        </div>
+                    </div>
+            
+                    <div class="document">
+                        <div>
+                            <span class="doc-type doc-type-person">person</span>
+                            John Smith is a software engineer with 10 years of experience in Python and JavaScript.
+                        </div>
+                        <div class="metadata">
+                            <span>Type: person</span>
+                            <span>Source: employee_database</span>
+                            <span>ID: p001</span>
+                        </div>
+                    </div>
+            
+                    <div class="document">
+                        <div>
+                            <span class="doc-type doc-type-company">company</span>
+                            TechGiant Inc. is a global leader in AI and machine learning technologies.
+                        </div>
+                        <div class="metadata">
+                            <span>Type: company</span>
+                            <span>Source: company_database</span>
+                            <span>ID: c002</span>
+                        </div>
+                    </div>
+            
+                </div>
+            </div>
+        
+            <div class="query-container">
+                <div class="query">Q: what is the most hype industry in 2023?</div>
+        
+                <div class="paraphrased-answer">
+                    <strong>Paraphrased Answer:</strong> According to the documents, the technology sector, especially applications of artificial intelligence, seems to have garnered the most excitement and focus in 2023, as indicated by notable growth and interest highlighted in the market analysis report.
+                </div>
+                <div class="original-answer">
+                    <strong>Original Answer:</strong> Based on the provided documents, the technology sector, particularly AI applications, appears to be the most hyped industry in 2023. This is evidenced by significant growth and attention in the market analysis report.
+                </div>
+                <div class="paraphrase-info">
+                    <strong>Paraphrase Style:</strong> professional
+                </div>
+                <div class="similarity-metrics">
+                    <h4>Similarity Metrics</h4>
+                    <ul>
+                        <li>
+                            <span class="metric-name">Text Similarity:</span>
+                            <span class="similarity-value">0.0556</span>
+                            <span class="similarity-bar" style="width: 11.12px;"></span>
+                        </li>
+                        <li>
+                            <span class="metric-name">Word Overlap:</span>
+                            <span class="similarity-value">0.2826</span>
+                            <span class="similarity-bar" style="width: 56.52px;"></span>
+                        </li>
+                        <li>
+                            <span class="metric-name">Cosine Similarity:</span>
+                            <span class="similarity-value">0.9403</span>
+                            <span class="similarity-bar" style="width: 188.06px;"></span>
+                        </li>
+                        <li>
+                            <span class="metric-name">Euclidean Similarity:</span>
+                            <span class="similarity-value">0.7432</span>
+                            <span class="similarity-bar" style="width: 148.64px;"></span>
+                        </li>
+                        <li>
+                            <span class="metric-name">Overall Similarity:</span>
+                            <span class="similarity-value">0.5924</span>
+                            <span class="similarity-bar" style="width: 118.48px;"></span>
+                        </li>
+                    </ul>
+                </div>
+            
+                <div class="documents">
+                    <h3>Retrieved Documents (3)</h3>
+        
+                    <div class="document">
+                        <div>
+                            <span class="doc-type doc-type-report">report</span>
+                            Annual Market Analysis: The technology sector grew by 8% in 2023, with AI applications leading the growth.
+                        </div>
+                        <div class="metadata">
+                            <span>Type: report</span>
+                            <span>Source: market_analysis</span>
+                            <span>ID: r002</span>
+                        </div>
+                    </div>
+            
+                    <div class="document">
+                        <div>
+                            <span class="doc-type doc-type-report">report</span>
+                            Q1 2023 Financial Report: Revenue increased by 15% compared to previous quarter.
+                        </div>
+                        <div class="metadata">
+                            <span>Type: report</span>
+                            <span>Source: financial_reports</span>
+                            <span>ID: r001</span>
+                        </div>
+                    </div>
+            
+                    <div class="document">
+                        <div>
+                            <span class="doc-type doc-type-article">article</span>
+                            Cybersecurity Challenges in 2023: Ransomware attacks have increased by 30% in the first half of the year.
+                        </div>
+                        <div class="metadata">
+                            <span>Type: article</span>
+                            <span>Source: security_digest</span>
+                            <span>ID: a003</span>
+                        </div>
+                    </div>
+            
+                </div>
+            </div>
+        
+            <div class="query-container">
+                <div class="query">Q: What were the financial results in Q1 2023?</div>
+        
+                <div class="paraphrased-answer">
+                    <strong>Paraphrased Answer:</strong> In the first quarter of 2023, the revenue went up by 15% from the last quarter.
+                </div>
+                <div class="original-answer">
+                    <strong>Original Answer:</strong> In Q1 2023, the revenue increased by 15% compared to the previous quarter.
+                </div>
+                <div class="paraphrase-info">
+                    <strong>Paraphrase Style:</strong> simple
+                </div>
+                <div class="similarity-metrics">
+                    <h4>Similarity Metrics</h4>
+                    <ul>
+                        <li>
+                            <span class="metric-name">Text Similarity:</span>
+                            <span class="similarity-value">0.6275</span>
+                            <span class="similarity-bar" style="width: 125.49999999999999px;"></span>
+                        </li>
+                        <li>
+                            <span class="metric-name">Word Overlap:</span>
+                            <span class="similarity-value">0.3684</span>
+                            <span class="similarity-bar" style="width: 73.68px;"></span>
+                        </li>
+                        <li>
+                            <span class="metric-name">Cosine Similarity:</span>
+                            <span class="similarity-value">0.9809</span>
+                            <span class="similarity-bar" style="width: 196.18px;"></span>
+                        </li>
+                        <li>
+                            <span class="metric-name">Euclidean Similarity:</span>
+                            <span class="similarity-value">0.8365</span>
+                            <span class="similarity-bar" style="width: 167.3px;"></span>
+                        </li>
+                        <li>
+                            <span class="metric-name">Overall Similarity:</span>
+                            <span class="similarity-value">0.7588</span>
+                            <span class="similarity-bar" style="width: 151.76000000000002px;"></span>
+                        </li>
+                    </ul>
+                </div>
+            
+                <div class="documents">
+                    <h3>Retrieved Documents (3)</h3>
+        
+                    <div class="document">
+                        <div>
+                            <span class="doc-type doc-type-report">report</span>
+                            Q1 2023 Financial Report: Revenue increased by 15% compared to previous quarter.
+                        </div>
+                        <div class="metadata">
+                            <span>Type: report</span>
+                            <span>Source: financial_reports</span>
+                            <span>ID: r001</span>
+                        </div>
+                    </div>
+            
+                    <div class="document">
+                        <div>
+                            <span class="doc-type doc-type-report">report</span>
+                            Annual Market Analysis: The technology sector grew by 8% in 2023, with AI applications leading the growth.
+                        </div>
+                        <div class="metadata">
+                            <span>Type: report</span>
+                            <span>Source: market_analysis</span>
+                            <span>ID: r002</span>
+                        </div>
+                    </div>
+            
+                    <div class="document">
+                        <div>
+                            <span class="doc-type doc-type-article">article</span>
+                            Cybersecurity Challenges in 2023: Ransomware attacks have increased by 30% in the first half of the year.
+                        </div>
+                        <div class="metadata">
+                            <span>Type: article</span>
+                            <span>Source: security_digest</span>
+                            <span>ID: a003</span>
+                        </div>
+                    </div>
+            
+                </div>
+            </div>
+        
+            <div id="document-types" class="section">
+                <h2>Document Types</h2>
+                <div class="query-container">
+                    <p>This vector store contains the following document types:</p>
+                    <ul>
+    
+                        <li><strong>person</strong>: 3 documents</li>
+        
+                        <li><strong>company</strong>: 3 documents</li>
+        
+                        <li><strong>report</strong>: 3 documents</li>
+        
+                        <li><strong>article</strong>: 3 documents</li>
+        
+                    </ul>
+                </div>
+            </div>
+    
+            <div id="cross-document" class="section">
+                <h2>Cross-Document Queries</h2>
+    
+                <div class="query-container">
+                    <div class="query">Q: What tech firms are mentioned and which personnel work at these organizations?</div>
+                    <div class="answer">
+                        <strong>Answer:</strong> The companies referred to in the documents are TechGiant Inc. and Acme Corp., and no particular individuals are named within the provided files.
+                    </div>
+                    
+                    <div class="documents">
+                        <h3>Retrieved Documents from Multiple Sources (12)</h3>
+        
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-person">person</span>
+                                Michael Brown is a project manager with experience in agile methodologies.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: person</span>
+                                <span>Source: employee_database</span>
+                                <span>ID: p003</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-person">person</span>
+                                Sarah Johnson is a data scientist specializing in machine learning and AI applications.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: person</span>
+                                <span>Source: employee_database</span>
+                                <span>ID: p002</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-person">person</span>
+                                John Smith is a software engineer with 10 years of experience in Python and JavaScript.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: person</span>
+                                <span>Source: employee_database</span>
+                                <span>ID: p001</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-company">company</span>
+                                TechGiant Inc. is a global leader in AI and machine learning technologies.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: company</span>
+                                <span>Source: company_database</span>
+                                <span>ID: c002</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-company">company</span>
+                                Acme Corp is a technology company founded in 2005, specializing in cloud solutions.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: company</span>
+                                <span>Source: company_database</span>
+                                <span>ID: c001</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-company">company</span>
+                                DataSolutions Ltd provides data analytics and business intelligence services.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: company</span>
+                                <span>Source: company_database</span>
+                                <span>ID: c003</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-report">report</span>
+                                Annual Market Analysis: The technology sector grew by 8% in 2023, with AI applications leading the growth.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: report</span>
+                                <span>Source: market_analysis</span>
+                                <span>ID: r002</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-report">report</span>
+                                Project Status Report: The cloud migration project is 75% complete and on schedule.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: report</span>
+                                <span>Source: project_reports</span>
+                                <span>ID: r003</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-report">report</span>
+                                Q1 2023 Financial Report: Revenue increased by 15% compared to previous quarter.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: report</span>
+                                <span>Source: financial_reports</span>
+                                <span>ID: r001</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-article">article</span>
+                                The Future of Remote Work: Studies show that hybrid work models increase productivity.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: article</span>
+                                <span>Source: business_journal</span>
+                                <span>ID: a002</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-article">article</span>
+                                New Advances in AI: Researchers have developed a more efficient neural network architecture.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: article</span>
+                                <span>Source: tech_news</span>
+                                <span>ID: a001</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-article">article</span>
+                                Cybersecurity Challenges in 2023: Ransomware attacks have increased by 30% in the first half of the year.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: article</span>
+                                <span>Source: security_digest</span>
+                                <span>ID: a003</span>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="synonym-validation">
+                        <h3>Synonym Validation</h3>
+                        <ul>
+        
+                            <li><strong>company document</strong>: firms, organizations</li>
+            
+                            <li><strong>person document</strong>: personnel</li>
+            
+                        </ul>
+                    </div>
+                </div>
+        
+                <div class="query-container">
+                    <div class="query">Q: Summarize the latest market analysis and financial statements from the reports.</div>
+                    <div class="answer">
+                        <strong>Answer:</strong> The most recent market analysis reveals that the technology industry saw an 8% expansion in 2023, largely due to progress in artificial intelligence. Financially, the first quarter of 2023 brought a 15% rise in revenue when compared to the preceding quarter.
+                    </div>
+                    
+                    <div class="documents">
+                        <h3>Retrieved Documents from Multiple Sources (12)</h3>
+        
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-person">person</span>
+                                Michael Brown is a project manager with experience in agile methodologies.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: person</span>
+                                <span>Source: employee_database</span>
+                                <span>ID: p003</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-person">person</span>
+                                Sarah Johnson is a data scientist specializing in machine learning and AI applications.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: person</span>
+                                <span>Source: employee_database</span>
+                                <span>ID: p002</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-person">person</span>
+                                John Smith is a software engineer with 10 years of experience in Python and JavaScript.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: person</span>
+                                <span>Source: employee_database</span>
+                                <span>ID: p001</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-company">company</span>
+                                DataSolutions Ltd provides data analytics and business intelligence services.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: company</span>
+                                <span>Source: company_database</span>
+                                <span>ID: c003</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-company">company</span>
+                                TechGiant Inc. is a global leader in AI and machine learning technologies.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: company</span>
+                                <span>Source: company_database</span>
+                                <span>ID: c002</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-company">company</span>
+                                Acme Corp is a technology company founded in 2005, specializing in cloud solutions.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: company</span>
+                                <span>Source: company_database</span>
+                                <span>ID: c001</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-report">report</span>
+                                Q1 2023 Financial Report: Revenue increased by 15% compared to previous quarter.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: report</span>
+                                <span>Source: financial_reports</span>
+                                <span>ID: r001</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-report">report</span>
+                                Annual Market Analysis: The technology sector grew by 8% in 2023, with AI applications leading the growth.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: report</span>
+                                <span>Source: market_analysis</span>
+                                <span>ID: r002</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-report">report</span>
+                                Project Status Report: The cloud migration project is 75% complete and on schedule.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: report</span>
+                                <span>Source: project_reports</span>
+                                <span>ID: r003</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-article">article</span>
+                                Cybersecurity Challenges in 2023: Ransomware attacks have increased by 30% in the first half of the year.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: article</span>
+                                <span>Source: security_digest</span>
+                                <span>ID: a003</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-article">article</span>
+                                New Advances in AI: Researchers have developed a more efficient neural network architecture.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: article</span>
+                                <span>Source: tech_news</span>
+                                <span>ID: a001</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-article">article</span>
+                                The Future of Remote Work: Studies show that hybrid work models increase productivity.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: article</span>
+                                <span>Source: business_journal</span>
+                                <span>ID: a002</span>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="synonym-validation">
+                        <h3>Synonym Validation</h3>
+                        <ul>
+        
+                            <li><strong>report</strong>: market analysis, financial statements, reports</li>
+            
+                        </ul>
+                    </div>
+                </div>
+        
+                <div class="query-container">
+                    <div class="query">Q: What are the main cybersecurity challenges and technological developments mentioned in the articles?</div>
+                    <div class="answer">
+                        <strong>Answer:</strong> The primary cybersecurity issue highlighted in the articles is the notable surge in ransomware attacks, which have escalated by 30% in the first six months of 2023. In terms of technological advancements, the tech industry has expanded by 8% over the same period, largely propelled by the growth in AI applications.
+                    </div>
+                    
+                    <div class="documents">
+                        <h3>Retrieved Documents from Multiple Sources (12)</h3>
+        
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-person">person</span>
+                                Sarah Johnson is a data scientist specializing in machine learning and AI applications.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: person</span>
+                                <span>Source: employee_database</span>
+                                <span>ID: p002</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-person">person</span>
+                                John Smith is a software engineer with 10 years of experience in Python and JavaScript.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: person</span>
+                                <span>Source: employee_database</span>
+                                <span>ID: p001</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-person">person</span>
+                                Michael Brown is a project manager with experience in agile methodologies.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: person</span>
+                                <span>Source: employee_database</span>
+                                <span>ID: p003</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-company">company</span>
+                                Acme Corp is a technology company founded in 2005, specializing in cloud solutions.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: company</span>
+                                <span>Source: company_database</span>
+                                <span>ID: c001</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-company">company</span>
+                                TechGiant Inc. is a global leader in AI and machine learning technologies.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: company</span>
+                                <span>Source: company_database</span>
+                                <span>ID: c002</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-company">company</span>
+                                DataSolutions Ltd provides data analytics and business intelligence services.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: company</span>
+                                <span>Source: company_database</span>
+                                <span>ID: c003</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-report">report</span>
+                                Annual Market Analysis: The technology sector grew by 8% in 2023, with AI applications leading the growth.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: report</span>
+                                <span>Source: market_analysis</span>
+                                <span>ID: r002</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-report">report</span>
+                                Project Status Report: The cloud migration project is 75% complete and on schedule.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: report</span>
+                                <span>Source: project_reports</span>
+                                <span>ID: r003</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-report">report</span>
+                                Q1 2023 Financial Report: Revenue increased by 15% compared to previous quarter.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: report</span>
+                                <span>Source: financial_reports</span>
+                                <span>ID: r001</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-article">article</span>
+                                Cybersecurity Challenges in 2023: Ransomware attacks have increased by 30% in the first half of the year.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: article</span>
+                                <span>Source: security_digest</span>
+                                <span>ID: a003</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-article">article</span>
+                                New Advances in AI: Researchers have developed a more efficient neural network architecture.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: article</span>
+                                <span>Source: tech_news</span>
+                                <span>ID: a001</span>
+                            </div>
+                        </div>
+            
+                        <div class="document">
+                            <div>
+                                <span class="doc-type doc-type-article">article</span>
+                                The Future of Remote Work: Studies show that hybrid work models increase productivity.
+                            </div>
+                            <div class="metadata">
+                                <span>Type: article</span>
+                                <span>Source: business_journal</span>
+                                <span>ID: a002</span>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="synonym-validation">
+                        <h3>Synonym Validation</h3>
+                        <ul>
+        
+                            <li><strong>document</strong>: articles</li>
+            
+                        </ul>
+                    </div>
+                </div>
+        
+        </div>
+        
+        <div class="timestamp">
+            Generated on 2025-04-02 14:49:41
+        </div>
+        
+        <script>
+            // Add smooth scrolling for navigation links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        </script>
+    </div>
+    </body>
+    </html>
+    

@@ -1,0 +1,11 @@
+[
+{
+  "timestamp": "2025-03-19 09:21:08",
+  "status": "info",
+  "message": "Detected proxies issue, trying alternative initialization"
+},
+{
+  "timestamp": "2025-03-19 09:21:09",
+  "status": "info",
+  "message": "Detected proxies issue in embeddings, using alternative initialization"
+}

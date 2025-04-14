@@ -1,0 +1,638 @@
+{
+  "status": "success",
+  "timestamp": "2025-04-02 14:48:59",
+  "document_types": {
+    "person": 3,
+    "company": 3,
+    "report": 3,
+    "article": 3
+  },
+  "general_queries": [
+    {
+      "query": "Who is Michael Brown?",
+      "retrieved_documents": [
+        {
+          "index": 1,
+          "content": "Michael Brown is a project manager with experience in agile methodologies.",
+          "metadata": {
+            "type": "person",
+            "source": "employee_database",
+            "id": "p003"
+          }
+        },
+        {
+          "index": 2,
+          "content": "John Smith is a software engineer with 10 years of experience in Python and JavaScript.",
+          "metadata": {
+            "type": "person",
+            "source": "employee_database",
+            "id": "p001"
+          }
+        },
+        {
+          "index": 3,
+          "content": "TechGiant Inc. is a global leader in AI and machine learning technologies.",
+          "metadata": {
+            "type": "company",
+            "source": "company_database",
+            "id": "c002"
+          }
+        }
+      ],
+      "answer": {
+        "answer": "Michael Brown navigates the world of project management with the finesse of an agile practitioner, seamlessly blending strategy and flexibility to drive projects to success.",
+        "sources": [
+          {
+            "content": "Michael Brown is a project manager with experience in agile methodologies.",
+            "metadata": {
+              "source": "employee_database",
+              "type": "person",
+              "id": "p003"
+            }
+          }
+        ],
+        "original_answer": "Michael Brown is a project manager with experience in agile methodologies.",
+        "paraphrased": true,
+        "paraphrase_style": "creative",
+        "similarity_metrics": {
+          "text_similarity": 0.4372,
+          "word_overlap": 0.1786,
+          "cosine_similarity": 0.9066,
+          "euclidean_similarity": 0.6982,
+          "semantic_similarity": 0.9066,
+          "overall_similarity": 0.6254
+        }
+      }
+    },
+    {
+      "query": "what is the most hype industry in 2023?",
+      "retrieved_documents": [
+        {
+          "index": 1,
+          "content": "Annual Market Analysis: The technology sector grew by 8% in 2023, with AI applications leading the growth.",
+          "metadata": {
+            "type": "report",
+            "source": "market_analysis",
+            "id": "r002"
+          }
+        },
+        {
+          "index": 2,
+          "content": "Q1 2023 Financial Report: Revenue increased by 15% compared to previous quarter.",
+          "metadata": {
+            "type": "report",
+            "source": "financial_reports",
+            "id": "r001"
+          }
+        },
+        {
+          "index": 3,
+          "content": "Cybersecurity Challenges in 2023: Ransomware attacks have increased by 30% in the first half of the year.",
+          "metadata": {
+            "type": "article",
+            "source": "security_digest",
+            "id": "a003"
+          }
+        }
+      ],
+      "answer": {
+        "answer": "According to the documents, the technology sector, especially applications of artificial intelligence, seems to have garnered the most excitement and focus in 2023, as indicated by notable growth and interest highlighted in the market analysis report.",
+        "sources": [
+          {
+            "content": "Annual Market Analysis: The technology sector grew by 8% in 2023, with AI applications leading the growth.",
+            "metadata": {
+              "source": "market_analysis",
+              "type": "report",
+              "id": "r002"
+            }
+          }
+        ],
+        "original_answer": "Based on the provided documents, the technology sector, particularly AI applications, appears to be the most hyped industry in 2023. This is evidenced by significant growth and attention in the market analysis report.",
+        "paraphrased": true,
+        "paraphrase_style": "professional",
+        "similarity_metrics": {
+          "text_similarity": 0.0556,
+          "word_overlap": 0.2826,
+          "cosine_similarity": 0.9403,
+          "euclidean_similarity": 0.7432,
+          "semantic_similarity": 0.9403,
+          "overall_similarity": 0.5924
+        }
+      }
+    },
+    {
+      "query": "What were the financial results in Q1 2023?",
+      "retrieved_documents": [
+        {
+          "index": 1,
+          "content": "Q1 2023 Financial Report: Revenue increased by 15% compared to previous quarter.",
+          "metadata": {
+            "type": "report",
+            "source": "financial_reports",
+            "id": "r001"
+          }
+        },
+        {
+          "index": 2,
+          "content": "Annual Market Analysis: The technology sector grew by 8% in 2023, with AI applications leading the growth.",
+          "metadata": {
+            "type": "report",
+            "source": "market_analysis",
+            "id": "r002"
+          }
+        },
+        {
+          "index": 3,
+          "content": "Cybersecurity Challenges in 2023: Ransomware attacks have increased by 30% in the first half of the year.",
+          "metadata": {
+            "type": "article",
+            "source": "security_digest",
+            "id": "a003"
+          }
+        }
+      ],
+      "answer": {
+        "answer": "In the first quarter of 2023, the revenue went up by 15% from the last quarter.",
+        "sources": [
+          {
+            "content": "Q1 2023 Financial Report: Revenue increased by 15% compared to previous quarter.",
+            "metadata": {
+              "source": "financial_reports",
+              "type": "report",
+              "id": "r001"
+            }
+          }
+        ],
+        "original_answer": "In Q1 2023, the revenue increased by 15% compared to the previous quarter.",
+        "paraphrased": true,
+        "paraphrase_style": "simple",
+        "similarity_metrics": {
+          "text_similarity": 0.6275,
+          "word_overlap": 0.3684,
+          "cosine_similarity": 0.9809,
+          "euclidean_similarity": 0.8365,
+          "semantic_similarity": 0.9809,
+          "overall_similarity": 0.7588
+        }
+      }
+    }
+  ],
+  "cross_document_queries": [
+    {
+      "query": "What tech firms are mentioned and which personnel work at these organizations?",
+      "retrieved_documents": [
+        {
+          "index": 1,
+          "content": "Michael Brown is a project manager with experience in agile methodologies.",
+          "metadata": {
+            "type": "person",
+            "source": "employee_database",
+            "id": "p003"
+          }
+        },
+        {
+          "index": 2,
+          "content": "Sarah Johnson is a data scientist specializing in machine learning and AI applications.",
+          "metadata": {
+            "type": "person",
+            "source": "employee_database",
+            "id": "p002"
+          }
+        },
+        {
+          "index": 3,
+          "content": "John Smith is a software engineer with 10 years of experience in Python and JavaScript.",
+          "metadata": {
+            "type": "person",
+            "source": "employee_database",
+            "id": "p001"
+          }
+        },
+        {
+          "index": 4,
+          "content": "TechGiant Inc. is a global leader in AI and machine learning technologies.",
+          "metadata": {
+            "type": "company",
+            "source": "company_database",
+            "id": "c002"
+          }
+        },
+        {
+          "index": 5,
+          "content": "Acme Corp is a technology company founded in 2005, specializing in cloud solutions.",
+          "metadata": {
+            "type": "company",
+            "source": "company_database",
+            "id": "c001"
+          }
+        },
+        {
+          "index": 6,
+          "content": "DataSolutions Ltd provides data analytics and business intelligence services.",
+          "metadata": {
+            "type": "company",
+            "source": "company_database",
+            "id": "c003"
+          }
+        },
+        {
+          "index": 7,
+          "content": "Annual Market Analysis: The technology sector grew by 8% in 2023, with AI applications leading the growth.",
+          "metadata": {
+            "type": "report",
+            "source": "market_analysis",
+            "id": "r002"
+          }
+        },
+        {
+          "index": 8,
+          "content": "Project Status Report: The cloud migration project is 75% complete and on schedule.",
+          "metadata": {
+            "type": "report",
+            "source": "project_reports",
+            "id": "r003"
+          }
+        },
+        {
+          "index": 9,
+          "content": "Q1 2023 Financial Report: Revenue increased by 15% compared to previous quarter.",
+          "metadata": {
+            "type": "report",
+            "source": "financial_reports",
+            "id": "r001"
+          }
+        },
+        {
+          "index": 10,
+          "content": "The Future of Remote Work: Studies show that hybrid work models increase productivity.",
+          "metadata": {
+            "type": "article",
+            "source": "business_journal",
+            "id": "a002"
+          }
+        },
+        {
+          "index": 11,
+          "content": "New Advances in AI: Researchers have developed a more efficient neural network architecture.",
+          "metadata": {
+            "type": "article",
+            "source": "tech_news",
+            "id": "a001"
+          }
+        },
+        {
+          "index": 12,
+          "content": "Cybersecurity Challenges in 2023: Ransomware attacks have increased by 30% in the first half of the year.",
+          "metadata": {
+            "type": "article",
+            "source": "security_digest",
+            "id": "a003"
+          }
+        }
+      ],
+      "answer": {
+        "answer": "The companies referred to in the documents are TechGiant Inc. and Acme Corp., and no particular individuals are named within the provided files.",
+        "sources": [
+          {
+            "content": "TechGiant Inc. is a global leader in AI and machine learning technologies.",
+            "metadata": {
+              "source": "company_database",
+              "type": "company",
+              "id": "c002"
+            }
+          },
+          {
+            "content": "Acme Corp is a technology company founded in 2005, specializing in cloud solutions.",
+            "metadata": {
+              "source": "company_database",
+              "type": "company",
+              "id": "c001"
+            }
+          }
+        ],
+        "original_answer": "The tech firms mentioned in the documents are TechGiant Inc. and Acme Corp. No specific personnel are mentioned in the provided documents.",
+        "paraphrased": true,
+        "paraphrase_style": "analytical",
+        "similarity_metrics": {
+          "text_similarity": 0.6879,
+          "word_overlap": 0.3846,
+          "cosine_similarity": 0.9616,
+          "euclidean_similarity": 0.7831,
+          "semantic_similarity": 0.9616,
+          "overall_similarity": 0.7558
+        }
+      },
+      "synonym_validation": {
+        "company document": [
+          "firms",
+          "organizations"
+        ],
+        "person document": [
+          "personnel"
+        ]
+      }
+    },
+    {
+      "query": "Summarize the latest market analysis and financial statements from the reports.",
+      "retrieved_documents": [
+        {
+          "index": 1,
+          "content": "Michael Brown is a project manager with experience in agile methodologies.",
+          "metadata": {
+            "type": "person",
+            "source": "employee_database",
+            "id": "p003"
+          }
+        },
+        {
+          "index": 2,
+          "content": "Sarah Johnson is a data scientist specializing in machine learning and AI applications.",
+          "metadata": {
+            "type": "person",
+            "source": "employee_database",
+            "id": "p002"
+          }
+        },
+        {
+          "index": 3,
+          "content": "John Smith is a software engineer with 10 years of experience in Python and JavaScript.",
+          "metadata": {
+            "type": "person",
+            "source": "employee_database",
+            "id": "p001"
+          }
+        },
+        {
+          "index": 4,
+          "content": "DataSolutions Ltd provides data analytics and business intelligence services.",
+          "metadata": {
+            "type": "company",
+            "source": "company_database",
+            "id": "c003"
+          }
+        },
+        {
+          "index": 5,
+          "content": "TechGiant Inc. is a global leader in AI and machine learning technologies.",
+          "metadata": {
+            "type": "company",
+            "source": "company_database",
+            "id": "c002"
+          }
+        },
+        {
+          "index": 6,
+          "content": "Acme Corp is a technology company founded in 2005, specializing in cloud solutions.",
+          "metadata": {
+            "type": "company",
+            "source": "company_database",
+            "id": "c001"
+          }
+        },
+        {
+          "index": 7,
+          "content": "Q1 2023 Financial Report: Revenue increased by 15% compared to previous quarter.",
+          "metadata": {
+            "type": "report",
+            "source": "financial_reports",
+            "id": "r001"
+          }
+        },
+        {
+          "index": 8,
+          "content": "Annual Market Analysis: The technology sector grew by 8% in 2023, with AI applications leading the growth.",
+          "metadata": {
+            "type": "report",
+            "source": "market_analysis",
+            "id": "r002"
+          }
+        },
+        {
+          "index": 9,
+          "content": "Project Status Report: The cloud migration project is 75% complete and on schedule.",
+          "metadata": {
+            "type": "report",
+            "source": "project_reports",
+            "id": "r003"
+          }
+        },
+        {
+          "index": 10,
+          "content": "Cybersecurity Challenges in 2023: Ransomware attacks have increased by 30% in the first half of the year.",
+          "metadata": {
+            "type": "article",
+            "source": "security_digest",
+            "id": "a003"
+          }
+        },
+        {
+          "index": 11,
+          "content": "New Advances in AI: Researchers have developed a more efficient neural network architecture.",
+          "metadata": {
+            "type": "article",
+            "source": "tech_news",
+            "id": "a001"
+          }
+        },
+        {
+          "index": 12,
+          "content": "The Future of Remote Work: Studies show that hybrid work models increase productivity.",
+          "metadata": {
+            "type": "article",
+            "source": "business_journal",
+            "id": "a002"
+          }
+        }
+      ],
+      "answer": {
+        "answer": "The most recent market analysis reveals that the technology industry saw an 8% expansion in 2023, largely due to progress in artificial intelligence. Financially, the first quarter of 2023 brought a 15% rise in revenue when compared to the preceding quarter.",
+        "sources": [
+          {
+            "content": "Annual Market Analysis: The technology sector grew by 8% in 2023, with AI applications leading the growth.",
+            "metadata": {
+              "source": "market_analysis",
+              "type": "report",
+              "id": "r002"
+            }
+          },
+          {
+            "content": "Q1 2023 Financial Report: Revenue increased by 15% compared to previous quarter.",
+            "metadata": {
+              "source": "financial_reports",
+              "type": "report",
+              "id": "r001"
+            }
+          }
+        ],
+        "original_answer": "The latest market analysis indicates that the technology sector experienced an 8% growth in 2023, primarily driven by advancements in AI applications. In terms of financial statements, the Q1 2023 financial report shows a 15% increase in revenue compared to the previous quarter.",
+        "paraphrased": true,
+        "paraphrase_style": "conversational",
+        "similarity_metrics": {
+          "text_similarity": 0.3277,
+          "word_overlap": 0.3148,
+          "cosine_similarity": 0.9417,
+          "euclidean_similarity": 0.7455,
+          "semantic_similarity": 0.9417,
+          "overall_similarity": 0.6543
+        }
+      },
+      "synonym_validation": {
+        "report": [
+          "market analysis",
+          "financial statements",
+          "reports"
+        ]
+      }
+    },
+    {
+      "query": "What are the main cybersecurity challenges and technological developments mentioned in the articles?",
+      "retrieved_documents": [
+        {
+          "index": 1,
+          "content": "Sarah Johnson is a data scientist specializing in machine learning and AI applications.",
+          "metadata": {
+            "type": "person",
+            "source": "employee_database",
+            "id": "p002"
+          }
+        },
+        {
+          "index": 2,
+          "content": "John Smith is a software engineer with 10 years of experience in Python and JavaScript.",
+          "metadata": {
+            "type": "person",
+            "source": "employee_database",
+            "id": "p001"
+          }
+        },
+        {
+          "index": 3,
+          "content": "Michael Brown is a project manager with experience in agile methodologies.",
+          "metadata": {
+            "type": "person",
+            "source": "employee_database",
+            "id": "p003"
+          }
+        },
+        {
+          "index": 4,
+          "content": "Acme Corp is a technology company founded in 2005, specializing in cloud solutions.",
+          "metadata": {
+            "type": "company",
+            "source": "company_database",
+            "id": "c001"
+          }
+        },
+        {
+          "index": 5,
+          "content": "TechGiant Inc. is a global leader in AI and machine learning technologies.",
+          "metadata": {
+            "type": "company",
+            "source": "company_database",
+            "id": "c002"
+          }
+        },
+        {
+          "index": 6,
+          "content": "DataSolutions Ltd provides data analytics and business intelligence services.",
+          "metadata": {
+            "type": "company",
+            "source": "company_database",
+            "id": "c003"
+          }
+        },
+        {
+          "index": 7,
+          "content": "Annual Market Analysis: The technology sector grew by 8% in 2023, with AI applications leading the growth.",
+          "metadata": {
+            "type": "report",
+            "source": "market_analysis",
+            "id": "r002"
+          }
+        },
+        {
+          "index": 8,
+          "content": "Project Status Report: The cloud migration project is 75% complete and on schedule.",
+          "metadata": {
+            "type": "report",
+            "source": "project_reports",
+            "id": "r003"
+          }
+        },
+        {
+          "index": 9,
+          "content": "Q1 2023 Financial Report: Revenue increased by 15% compared to previous quarter.",
+          "metadata": {
+            "type": "report",
+            "source": "financial_reports",
+            "id": "r001"
+          }
+        },
+        {
+          "index": 10,
+          "content": "Cybersecurity Challenges in 2023: Ransomware attacks have increased by 30% in the first half of the year.",
+          "metadata": {
+            "type": "article",
+            "source": "security_digest",
+            "id": "a003"
+          }
+        },
+        {
+          "index": 11,
+          "content": "New Advances in AI: Researchers have developed a more efficient neural network architecture.",
+          "metadata": {
+            "type": "article",
+            "source": "tech_news",
+            "id": "a001"
+          }
+        },
+        {
+          "index": 12,
+          "content": "The Future of Remote Work: Studies show that hybrid work models increase productivity.",
+          "metadata": {
+            "type": "article",
+            "source": "business_journal",
+            "id": "a002"
+          }
+        }
+      ],
+      "answer": {
+        "answer": "The primary cybersecurity issue highlighted in the articles is the notable surge in ransomware attacks, which have escalated by 30% in the first six months of 2023. In terms of technological advancements, the tech industry has expanded by 8% over the same period, largely propelled by the growth in AI applications.",
+        "sources": [
+          {
+            "content": "Cybersecurity Challenges in 2023: Ransomware attacks have increased by 30% in the first half of the year.",
+            "metadata": {
+              "source": "security_digest",
+              "type": "article",
+              "id": "a003"
+            }
+          },
+          {
+            "content": "Annual Market Analysis: The technology sector grew by 8% in 2023, with AI applications leading the growth.",
+            "metadata": {
+              "source": "market_analysis",
+              "type": "report",
+              "id": "r002"
+            }
+          }
+        ],
+        "original_answer": "The main cybersecurity challenge mentioned in the articles is the significant increase in ransomware attacks, which have risen by 30% in the first half of 2023. On the technological development side, the technology sector has grown by 8% in 2023, with AI applications being the primary driver of this growth.",
+        "paraphrased": true,
+        "paraphrase_style": "technical",
+        "similarity_metrics": {
+          "text_similarity": 0.3981,
+          "word_overlap": 0.3276,
+          "cosine_similarity": 0.9527,
+          "euclidean_similarity": 0.7648,
+          "semantic_similarity": 0.9527,
+          "overall_similarity": 0.6792
+        }
+      },
+      "synonym_validation": {
+        "document": [
+          "articles"
+        ]
+      }
+    }
+  ]
+}

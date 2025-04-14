@@ -1,0 +1,230 @@
+{
+  "status": "success",
+  "general_queries": [
+    {
+      "query": "Siapa Elon Musk?",
+      "retrieved_documents": [
+        {
+          "index": 1,
+          "content": "Elonmusk adalah seorang pengusaha teknologi dan pendiri beberapa perusahaan terkenal.",
+          "metadata": {
+            "type": "person",
+            "source": "biography",
+            "id": "elon_musk_bio"
+          }
+        },
+        {
+          "index": 2,
+          "content": "Tesla adalah perusahaan mobil listrik yang didirikan oleh Elon Musk. Perusahaan ini terkenal dengan inovasi teknologi dan desain yang futuristik.",
+          "metadata": {
+            "type": "company",
+            "source": "company_profile",
+            "id": "tesla_profile"
+          }
+        },
+        {
+          "index": 3,
+          "content": "SpaceX adalah perusahaan eksplorasi luar angkasa yang didirikan oleh Elon Musk dengan tujuan mengurangi biaya transportasi luar angkasa dan memungkinkan kolonisasi Mars.",
+          "metadata": {
+            "type": "company",
+            "source": "company_profile",
+            "id": "spacex_profile"
+          }
+        },
+        {
+          "index": 4,
+          "content": "Peluncuran roket Starship oleh SpaceX mencapai orbit dengan sukses pada misi terakhir, menandai tonggak penting dalam program luar angkasa perusahaan.",
+          "metadata": {
+            "type": "event",
+            "source": "news",
+            "id": "spacex_launch_2024"
+          }
+        }
+      ],
+      "answer": {
+        "answer": "Elon Musk adalah seorang pengusaha teknologi dan pendiri beberapa perusahaan terkenal, termasuk Tesla, perusahaan mobil listrik yang terkenal dengan inovasi teknologi dan desain futuristik, serta SpaceX, perusahaan eksplorasi luar angkasa yang bertujuan untuk mengurangi biaya transportasi luar angkasa dan memungkinkan kolonisasi Mars.",
+        "sources": [
+          {
+            "content": "Elonmusk adalah seorang pengusaha teknologi dan pendiri beberapa perusahaan terkenal.",
+            "metadata": {
+              "source": "biography",
+              "type": "person",
+              "id": "elon_musk_bio"
+            }
+          },
+          {
+            "content": "Tesla adalah perusahaan mobil listrik yang didirikan oleh Elon Musk. Perusahaan ini terkenal dengan inovasi teknologi dan desain yang futuristik.",
+            "metadata": {
+              "source": "company_profile",
+              "type": "company",
+              "id": "tesla_profile"
+            }
+          },
+          {
+            "content": "SpaceX adalah perusahaan eksplorasi luar angkasa yang didirikan oleh Elon Musk dengan tujuan mengurangi biaya transportasi luar angkasa dan memungkinkan kolonisasi Mars.",
+            "metadata": {
+              "source": "company_profile",
+              "type": "company",
+              "id": "spacex_profile"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "query": "Apa itu Tesla?",
+      "retrieved_documents": [
+        {
+          "index": 1,
+          "content": "Tesla adalah perusahaan mobil listrik yang didirikan oleh Elon Musk. Perusahaan ini terkenal dengan inovasi teknologi dan desain yang futuristik.",
+          "metadata": {
+            "type": "company",
+            "source": "company_profile",
+            "id": "tesla_profile"
+          }
+        },
+        {
+          "index": 2,
+          "content": "Laporan keuangan Tesla menunjukkan peningkatan pendapatan sebesar 30% pada kuartal terakhir, didorong oleh penjualan Model Y yang kuat.",
+          "metadata": {
+            "type": "report",
+            "source": "financial_report",
+            "id": "tesla_q4_2024"
+          }
+        },
+        {
+          "index": 3,
+          "content": "SpaceX adalah perusahaan eksplorasi luar angkasa yang didirikan oleh Elon Musk dengan tujuan mengurangi biaya transportasi luar angkasa dan memungkinkan kolonisasi Mars.",
+          "metadata": {
+            "type": "company",
+            "source": "company_profile",
+            "id": "spacex_profile"
+          }
+        },
+        {
+          "index": 4,
+          "content": "Elonmusk adalah seorang pengusaha teknologi dan pendiri beberapa perusahaan terkenal.",
+          "metadata": {
+            "type": "person",
+            "source": "biography",
+            "id": "elon_musk_bio"
+          }
+        }
+      ],
+      "answer": {
+        "answer": "Tesla adalah perusahaan mobil listrik yang didirikan oleh Elon Musk. Perusahaan ini dikenal dengan inovasi teknologi dan desain yang futuristik.",
+        "sources": [
+          {
+            "content": "Tesla adalah perusahaan mobil listrik yang didirikan oleh Elon Musk. Perusahaan ini terkenal dengan inovasi teknologi dan desain yang futuristik.",
+            "metadata": {
+              "source": "company_profile",
+              "type": "company",
+              "id": "tesla_profile"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "query": "Apa tujuan SpaceX?",
+      "retrieved_documents": [
+        {
+          "index": 1,
+          "content": "SpaceX adalah perusahaan eksplorasi luar angkasa yang didirikan oleh Elon Musk dengan tujuan mengurangi biaya transportasi luar angkasa dan memungkinkan kolonisasi Mars.",
+          "metadata": {
+            "type": "company",
+            "source": "company_profile",
+            "id": "spacex_profile"
+          }
+        },
+        {
+          "index": 2,
+          "content": "Peluncuran roket Starship oleh SpaceX mencapai orbit dengan sukses pada misi terakhir, menandai tonggak penting dalam program luar angkasa perusahaan.",
+          "metadata": {
+            "type": "event",
+            "source": "news",
+            "id": "spacex_launch_2024"
+          }
+        },
+        {
+          "index": 3,
+          "content": "Tesla adalah perusahaan mobil listrik yang didirikan oleh Elon Musk. Perusahaan ini terkenal dengan inovasi teknologi dan desain yang futuristik.",
+          "metadata": {
+            "type": "company",
+            "source": "company_profile",
+            "id": "tesla_profile"
+          }
+        },
+        {
+          "index": 4,
+          "content": "Elonmusk adalah seorang pengusaha teknologi dan pendiri beberapa perusahaan terkenal.",
+          "metadata": {
+            "type": "person",
+            "source": "biography",
+            "id": "elon_musk_bio"
+          }
+        }
+      ],
+      "answer": {
+        "answer": "Tujuan SpaceX adalah mengurangi biaya transportasi luar angkasa dan memungkinkan kolonisasi Mars.",
+        "sources": [
+          {
+            "content": "SpaceX adalah perusahaan eksplorasi luar angkasa yang didirikan oleh Elon Musk dengan tujuan mengurangi biaya transportasi luar angkasa dan memungkinkan kolonisasi Mars.",
+            "metadata": {
+              "source": "company_profile",
+              "type": "company",
+              "id": "spacex_profile"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "filtered_query": {
+    "query": "Berikan informasi tentang perusahaan Elon Musk",
+    "filter": {
+      "type": "company"
+    },
+    "retrieved_documents": [
+      {
+        "index": 1,
+        "content": "Tesla adalah perusahaan mobil listrik yang didirikan oleh Elon Musk. Perusahaan ini terkenal dengan inovasi teknologi dan desain yang futuristik.",
+        "metadata": {
+          "type": "company",
+          "source": "company_profile",
+          "id": "tesla_profile"
+        }
+      },
+      {
+        "index": 2,
+        "content": "SpaceX adalah perusahaan eksplorasi luar angkasa yang didirikan oleh Elon Musk dengan tujuan mengurangi biaya transportasi luar angkasa dan memungkinkan kolonisasi Mars.",
+        "metadata": {
+          "type": "company",
+          "source": "company_profile",
+          "id": "spacex_profile"
+        }
+      }
+    ],
+    "answer": {
+      "answer": "Elon Musk telah mendirikan beberapa perusahaan inovatif. Tesla, salah satunya, adalah perusahaan mobil listrik yang dikenal dengan teknologi dan desain futuristiknya. SpaceX, perusahaan lainnya, berfokus pada eksplorasi luar angkasa dengan tujuan mengurangi biaya transportasi luar angkasa dan memungkinkan kolonisasi Mars.",
+      "sources": [
+        {
+          "content": "Tesla adalah perusahaan mobil listrik yang didirikan oleh Elon Musk. Perusahaan ini terkenal dengan inovasi teknologi dan desain yang futuristik.",
+          "metadata": {
+            "source": "company_profile",
+            "type": "company",
+            "id": "tesla_profile"
+          }
+        },
+        {
+          "content": "SpaceX adalah perusahaan eksplorasi luar angkasa yang didirikan oleh Elon Musk dengan tujuan mengurangi biaya transportasi luar angkasa dan memungkinkan kolonisasi Mars.",
+          "metadata": {
+            "source": "company_profile",
+            "type": "company",
+            "id": "spacex_profile"
+          }
+        }
+      ]
+    }
+  }
+}

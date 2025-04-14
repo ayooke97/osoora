@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osoora AI - Account</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="account-container">
+        <!-- Navigation -->
+        <nav class="account-nav">
+            <div class="nav-brand">
+                <i class="ri-robot-line"></i>
+                <h1>Osoora AI</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">
+                    <i class="ri-chat-3-line"></i>
+                    <span>Chat</span>
+                </a>
+                <div class="theme-selector">
+                    <button class="theme-button" id="theme-button">
+                        <i class="ri-sun-line" id="theme-icon"></i>
+                        <span>Theme</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="theme-dropdown hidden" id="theme-dropdown">
+                        <button class="theme-option" data-theme="light">
+                            <i class="ri-sun-line"></i>
+                            <div class="theme-option-info">
+                                <span class="theme-name">Light</span>
+                                <span class="theme-desc">Clean, bright appearance</span>
+                            </div>
+                            <i class="ri-check-line theme-check"></i>
+                        </button>
+                        <button class="theme-option" data-theme="dark">
+                            <i class="ri-moon-line"></i>
+                            <div class="theme-option-info">
+                                <span class="theme-name">Dark</span>
+                                <span class="theme-desc">Easy on the eyes</span>
+                            </div>
+                            <i class="ri-check-line theme-check"></i>
+                        </button>
+                        <button class="theme-option" data-theme="system">
+                            <i class="ri-computer-line"></i>
+                            <div class="theme-option-info">
+                                <span class="theme-name">System</span>
+                                <span class="theme-desc">Match system theme</span>
+                            </div>
+                            <i class="ri-check-line theme-check"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="account-content">
+            <!-- Login Form -->
+            <div class="auth-form" id="login-form">
+                <h2><i class="ri-login-circle-line"></i> Login</h2>
+                <form>
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <div class="password-input">
+                            <input type="password" id="login-password" required>
+                            <button type="button" class="toggle-password">
+                                <i class="ri-eye-off-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Login</button>
+                        <button type="button" class="btn-link" onclick="showForm('register')">Create Account</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Register Form -->
+            <div class="auth-form hidden" id="register-form">
+                <h2><i class="ri-user-add-line"></i> Create Account</h2>
+                <form>
+                    <div class="form-group">
+                        <label for="register-name">Full Name</label>
+                        <input type="text" id="register-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Password</label>
+                        <div class="password-input">
+                            <input type="password" id="register-password" required>
+                            <button type="button" class="toggle-password">
+                                <i class="ri-eye-off-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm-password">Confirm Password</label>
+                        <div class="password-input">
+                            <input type="password" id="register-confirm-password" required>
+                            <button type="button" class="toggle-password">
+                                <i class="ri-eye-off-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Create Account</button>
+                        <button type="button" class="btn-link" onclick="showForm('login')">Back to Login</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Profile Form (Hidden by default) -->
+            <div class="auth-form hidden" id="profile-form">
+                <h2><i class="ri-user-settings-line"></i> Profile Settings</h2>
+                <form>
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <img src="https://ui-avatars.com/api/?name=User&background=7c3aed&color=fff" alt="Profile" id="profile-image">
+                            <button type="button" class="change-avatar">
+                                <i class="ri-camera-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-name">Full Name</label>
+                        <input type="text" id="profile-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-email">Email</label>
+                        <input type="email" id="profile-email" required disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-current-password">Current Password</label>
+                        <div class="password-input">
+                            <input type="password" id="profile-current-password">
+                            <button type="button" class="toggle-password">
+                                <i class="ri-eye-off-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-new-password">New Password (optional)</label>
+                        <div class="password-input">
+                            <input type="password" id="profile-new-password">
+                            <button type="button" class="toggle-password">
+                                <i class="ri-eye-off-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                        <button type="button" class="btn-danger" onclick="logout()">Logout</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="account.js"></script>
+</body>
+</html>

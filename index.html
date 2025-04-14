@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashscope AI Chatbot</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/lib/highlight.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="chat-history" id="chat-history">
+            <div class="history-header">
+                <h3><i class="ri-chat-history-line"></i> Chat History</h3>
+                <div class="history-actions">
+                    <button class="close-sidebar" id="close-sidebar" title="Close sidebar">
+                        <i class="ri-close-line"></i>
+                    </button>
+                    <button class="clear-history" id="clear-history" title="Clear all history">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                    <button class="new-chat" id="new-chat" title="Start new chat">
+                        <i class="ri-add-line"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="history-list" id="history-list">
+                <!-- Empty state -->
+                <div class="empty-history" id="empty-history">
+                    <i class="ri-chat-3-line"></i>
+                    <p>No chat history yet.<br>Start a new conversation!</p>
+                </div>
+                <!-- Chat history items will be added here -->
+            </div>
+        </div>
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menu-toggle">
+                        <i class="ri-menu-line"></i>
+                    </button>
+                    <h2><i class="ri-robot-line"></i> Vnz AI Chatbot</h2>
+                </div>
+                <div class="header-actions">
+                    <div class="user-menu" id="user-menu">
+                        <button class="user-button" id="user-button">
+                            <img src="https://ui-avatars.com/api/?name=Guest&background=7c3aed&color=fff" 
+                                 alt="Profile" 
+                                 id="user-avatar"
+                                 class="user-avatar">
+                            <span class="user-name" id="user-name">Guest</span>
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+                        <div class="user-dropdown hidden" id="user-dropdown">
+                            <div class="dropdown-header">
+                                <div class="user-info">
+                                    <img src="https://ui-avatars.com/api/?name=Guest&background=7c3aed&color=fff" 
+                                         alt="Profile" 
+                                         class="user-avatar">
+                                    <div class="user-details">
+                                        <span class="user-name" id="dropdown-user-name">Guest</span>
+                                        <span class="user-email" id="user-email">Not signed in</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dropdown-items">
+                                <a href="account.html" class="dropdown-item" id="profile-link">
+                                    <i class="ri-user-settings-line"></i>
+                                    <span>Profile Settings</span>
+                                </a>
+                                <button class="dropdown-item" id="login-button">
+                                    <i class="ri-login-circle-line"></i>
+                                    <span>Sign In</span>
+                                </button>
+                                <button class="dropdown-item hidden" id="logout-button">
+                                    <i class="ri-logout-circle-line"></i>
+                                    <span>Sign Out</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="theme-toggle">
+                        <button id="theme-toggle" aria-label="Toggle theme">
+                            <i class="ri-sun-line" id="theme-icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <!-- Messages will be added here dynamically -->
+            </div>
+
+            <div class="chat-input">
+                <div class="chat-input-container">
+                    <input type="text" id="user-input" placeholder="Send a message...">
+                    <button id="send-button">
+                        <i class="ri-send-plane-fill"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Connection Status -->
+            <div class="connection-status" id="connection-status">
+                <i class="ri-wifi-line"></i> <span>Connected</span>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
